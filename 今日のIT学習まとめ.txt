@@ -1,0 +1,59 @@
+今日のIT学習まとめ
+
+CloudWatch Agentの動作確認
+
+Amazon CloudWatch
+Agentは、EC2インスタンス上のログやメトリクスをCloudWatchに送信するためのエージェントである。
+本日はsystemctl status amazon-cloudwatch-agentを使用して、サービスの状態を確認する方法を理解した。
+また、設定ファイルの変更後にはsudo systemctl restart amazon-cloudwatch-agentで再起動が必要であることも確認した。
+サービスが「active
+(running)」状態であれば、正しく動作していると判断できる。
+
+改行コード（CRLFとLF）の違い
+
+Windows環境では改行コードが「CRLF」、LinuxやMacでは「LF」である。
+スクリプトファイルをWindowsからLinuxに持ち込むと、改行コードの違いによって「command
+not found」などのエラーが発生する可能性がある。 Visual Studio
+Codeでは、右下の「改行コード」設定から「LF」に変更できる。
+この違いを理解することで、OS間でのスクリプト互換性を保つことができる。
+
+dos2unixコマンドの使用
+
+dos2unixは、Windows形式（CRLF）のファイルをUnix形式（LF）に変換するためのツールである。
+本日は、sudo dnf install dos2unixでインストールし、sudo dos2unix ファイル名で変換する手順を実践した。
+これにより、スクリプトが正しく実行されるようになり、改行コードによる実行エラーを防止できる。
+
+chmodとchownの使い分け
+
+Linuxでは、ファイルのアクセス制御を「所有者」「グループ」「その他」に分けて設定する。
+chmodはファイルの実行・読み取り・書き込み権限を変更するコマンドであり、chownは所有者やグループを変更するコマンドである。
+本日は、S3から取得したファイルが他ユーザーの所有になっている場合に、sudo chown -R simplex_ope:simplex /simplex/scriptで権限を修正し、
+sudo chmod 755 /simplex/script/bin/run_export.shで実行権限を付与する手順を確認した。
+
+S3ファイルのコピーと上書き
+
+AWS
+CLIのaws s3 cpコマンドを用いて、S3上のファイルをEC2にコピーする方法を学習した。
+例：aws s3 cp s3://asp-it-int-work/conf/log-export.conf /simplex/script/conf。
+誤った設定ファイルを削除する際は、sudo rm -f ファイル名で安全に削除できる。
+上書き時はファイル名の一致を確認し、ls -lでコピー後のファイルの所有者とパーミッションを確認することが重要である。
+
+shellスクリプト実行と権限エラーの対処
+
+本日は、run_export.shの実行時に「required file not found」や「Permission
+denied」などのエラーが発生した。
+原因として、改行コード（CRLF）やファイル権限の不足が挙げられた。
+それぞれdos2unix変換およびchmod 755実行によって解消された。
+これにより、bash実行環境でのスクリプト整備の重要性を再確認した。
+
+IAMロールの権限設定
+
+CloudWatch
+Logsのエクスポート時には、IAMロールにlogs:CreateExportTask権限が必要である。
+本日は、ASP_it_role_ec2_defaultにこのポリシーが付与されていないためにAccessDeniedが発生した。
+解決策として、ASP_system_ec2instance_roleと同等の権限を付与することで、正常にエクスポート処理を実行できるようにする。
+
+まとめ
+
+今日の作業では、Linux環境の基本操作（ファイル権限、改行コード、ログ出力管理）と、AWS関連コマンド（S3、CloudWatch、IAM）の実践的理解を深めた。
+特に環境間のファイル互換性や権限設定の重要性を学び、今後の運用タスクでも活用できる知識を獲得した。
