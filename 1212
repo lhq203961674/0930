@@ -1,0 +1,36 @@
+touch ${WORK_PATH}/cities_list.txt
+
+② 在文件里面写 41 个城市名（每行一个）
+
+cat > ${WORK_PATH}/cities_list.txt
+
+把你本地 TXT 内容粘贴进来（41行）
+
+然后按：
+
+Ctrl + D 结束并保存。
+
+
+③ 确认文件存在 & 行数正确
+
+ls -l ${WORK_PATH}/cities_list.txt
+wc -l ${WORK_PATH}/cities_list.txt
+输出
+
+41
+
+
+4.读文件内容
+
+while read CITY; do
+  echo ${CITY}
+done < ${WORK_PATH}/cities_list.txt
+
+
+5.检查
+
+while read CITY; do
+  ls -l /primas/01/work/recv/sftp/dummy_${CITY}_work.tar
+done < ${WORK_PATH}/cities_list.txt
+
+
